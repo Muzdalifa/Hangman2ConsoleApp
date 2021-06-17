@@ -9,11 +9,12 @@ namespace Hangman2ConsoleApp
         {
             string guessedWord = GuessWord();
 
-            char[] guessWordArray = new char[guessedWord.Length];
+            char[] userGuessArray = new char[guessedWord.Length];
 
             int numberOfGuesses = 0;
 
             int count = 0;
+            bool runFlag = true;
 
             System.Text.StringBuilder failGuess = new StringBuilder("", guessedWord.Length);
             System.Text.StringBuilder correctGuess = new StringBuilder("", guessedWord.Length);
@@ -25,7 +26,7 @@ namespace Hangman2ConsoleApp
             for (int i = 0; i < guessedWord.Length; i++)
             {
                 //initialize array of charater(_) which will be replaced by letters later on
-                guessWordArray.SetValue('_', i);
+                userGuessArray.SetValue('_', i);
 
                 Console.Write("_ \t");
             }           
@@ -35,39 +36,80 @@ namespace Hangman2ConsoleApp
             {
                 //getting user string
                 string userInput = GetUserInput();
-                if(userInput.Length == 1)
+                //if user guess single character
+                if (userInput.Length == 1)
                 {
                     //GuessSpecificLetter(guessedWord, userInput);
                     char userInputChar = Convert.ToChar(userInput);
                     Console.WriteLine(userInputChar);
-                   
+                    //char[] guessedWordArray = guessedWord.ToCharArray();
+                    //for(int i = 0; i<guessedWordArray.Length; i++)
+                    //{
+                    //    if
+                    //}
+                    //if user guess correct letter
+                    if (guessedWord.Contains(userInput))
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"Congratualtions! {userInput}");
+                        int[] guessedWordIndex;
+                        char[] guessedWordArray = guessedWord.ToCharArray();
+                        for (int i = 0; i < guessedWordArray.Length; i++)
+                        {
+                            //if it found the character
+                            if (userInputChar == guessedWordArray[i])
+                            {
+                                //Replace _ by the character
+                                userGuessArray.SetValue(userInputChar, i);
+                                //if all the character is replaced, break the code
+                                if (new string(userGuessArray).Equals(guessedWord)) //be carefull when converting string! 
+                                {
+                                    GuessCorrect(guessedWord);
+                                    runFlag = false;
+                                    break;
+
+                                }
+
+                            }
+                        }
+
+                        Console.WriteLine(userGuessArray);
+
+
+                        Console.ResetColor();
+                    }
+                    else//if user guess wrong letter
+                    {
+                        DrawHangman(count++);
+                    }
+
 
 
                 }
-                else
+                else //if user guess whole word
                 {
-                    if(userInput == guessedWord)
+                    if (userInput == guessedWord)
                     {
                         GuessCorrect(guessedWord);
                         break;
                     }
                     else
                     {
-                        
+
                         DrawHangman(count++);
                     }
-                    
+
                 }
 
 
                 numberOfGuesses++;
-            } while (numberOfGuesses < 10);
+            } while (numberOfGuesses < 10 && runFlag == true); ;
         }
 
         private static string GuessWord()
         {
             //string[] words = new string[] { "Keyboard", "People", "Machine", "School", "Lucky", "Geogerous","Football" };
-            string[] words = new string[] { "Ky", "Pe", "Mas" };
+            string[] words = new string[] { "Ky", "Pe", "Maas" };
 
             Random randObj = new Random();
             var randomIndex = randObj.Next(0, words.Length);
