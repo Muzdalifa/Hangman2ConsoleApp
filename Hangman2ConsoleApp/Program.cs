@@ -16,7 +16,7 @@ namespace Hangman2ConsoleApp
             int count = 0;
             bool runFlag = true;
 
-            System.Text.StringBuilder failGuess = new StringBuilder("", guessedWord.Length);
+            System.Text.StringBuilder failGuessSb = new StringBuilder("", guessedWord.Length);
             System.Text.StringBuilder correctGuess = new StringBuilder("", guessedWord.Length);
 
 
@@ -36,23 +36,22 @@ namespace Hangman2ConsoleApp
             {
                 //getting user string
                 string userInput = GetUserInput();
+                if(userInput == "")
+                {
+                    Console.WriteLine("Please enter a value : ");
+                    numberOfGuesses = numberOfGuesses - 1;
+                }
                 //if user guess single character
-                if (userInput.Length == 1)
+                else if(userInput.Length == 1)
                 {
                     //GuessSpecificLetter(guessedWord, userInput);
                     char userInputChar = Convert.ToChar(userInput);
                     Console.WriteLine(userInputChar);
-                    //char[] guessedWordArray = guessedWord.ToCharArray();
-                    //for(int i = 0; i<guessedWordArray.Length; i++)
-                    //{
-                    //    if
-                    //}
                     //if user guess correct letter
-                    if (guessedWord.Contains(userInput))
+                    if(guessedWord.Contains(userInput))
                     {
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine($"Congratualtions! {userInput}");
-                        int[] guessedWordIndex;
                         char[] guessedWordArray = guessedWord.ToCharArray();
                         for (int i = 0; i < guessedWordArray.Length; i++)
                         {
@@ -66,44 +65,51 @@ namespace Hangman2ConsoleApp
                                 {
                                     GuessCorrect(guessedWord);
                                     runFlag = false;
-                                    break;
-
-                                }
-
+                                    //break;                                    
+                                }                                
                             }
                         }
-
                         Console.WriteLine(userGuessArray);
-
-
                         Console.ResetColor();
                     }
                     else//if user guess wrong letter
                     {
-                        DrawHangman(count++);
+                        
+                        // Append characters to the end of the StringBuilder.
+                        if(!failGuessSb.ToString().Contains(userInput))
+                        {
+                            failGuessSb.Append(userInput);
+                            FailGuesses(failGuessSb);
+                            DrawHangman(count++);
+                        }
+                        else
+                        {
+                            FailGuesses(failGuessSb);
+                            numberOfGuesses = numberOfGuesses - 1;
+                            
+                        }                      
                     }
-
 
 
                 }
                 else //if user guess whole word
                 {
-                    if (userInput == guessedWord)
+                    if(userInput == guessedWord)
                     {
                         GuessCorrect(guessedWord);
                         break;
                     }
                     else
                     {
-
+                        
                         DrawHangman(count++);
                     }
-
+                    
                 }
 
 
                 numberOfGuesses++;
-            } while (numberOfGuesses < 10 && runFlag == true); ;
+            } while (numberOfGuesses < 10 && runFlag == true);;
         }
 
         private static string GuessWord()
@@ -129,10 +135,21 @@ namespace Hangman2ConsoleApp
             Console.ResetColor();
         }
 
+        private static void FailGuesses( StringBuilder failGuess)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            //Console.WriteLine("Wrong!");
+            for (int j = 0; j < failGuess.Length; j++)
+            {
+                Console.Write($"{ failGuess[j]} \t");
+            }
+            Console.WriteLine();
+            Console.ResetColor();
+        }
         private static void DrawHangman(int hangmanLength)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Wrong");
+            Console.WriteLine("Wrong!");
             string[] hangman = new string[]{"________",
                                     "________ \n | \n |\n |\n |",
                                     "________ \n | \n |\n |\n |\n ----------- ",
