@@ -17,11 +17,9 @@ namespace Hangman2ConsoleApp
             bool runFlag = true;
 
             System.Text.StringBuilder failGuessSb = new StringBuilder("", guessedWord.Length);
-            System.Text.StringBuilder correctGuess = new StringBuilder("", guessedWord.Length);
-
 
             Console.WriteLine("Guess this word : ");
-            Console.WriteLine(guessedWord); //to be deleted1 for testing purposes
+            //Console.WriteLine(guessedWord); //to be deleted1 for testing purposes
 
             for (int i = 0; i < guessedWord.Length; i++)
             {
@@ -36,6 +34,7 @@ namespace Hangman2ConsoleApp
             {
                 //getting user string
                 string userInput = GetUserInput();
+                //if user does not enter anything
                 if(userInput == "")
                 {
                     Console.WriteLine("Please enter a value : ");
@@ -44,37 +43,14 @@ namespace Hangman2ConsoleApp
                 //if user guess single character
                 else if(userInput.Length == 1)
                 {
-                    //GuessSpecificLetter(guessedWord, userInput);
-                    char userInputChar = Convert.ToChar(userInput);
-                    Console.WriteLine(userInputChar);
+                    
                     //if user guess correct letter
                     if(guessedWord.Contains(userInput))
                     {
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine($"Congratualtions! {userInput}");
-                        char[] guessedWordArray = guessedWord.ToCharArray();
-                        for (int i = 0; i < guessedWordArray.Length; i++)
-                        {
-                            //if it found the character
-                            if (userInputChar == guessedWordArray[i])
-                            {
-                                //Replace _ by the character
-                                userGuessArray.SetValue(userInputChar, i);
-                                //if all the character is replaced, break the code
-                                if (new string(userGuessArray).Equals(guessedWord)) //be carefull when converting string! 
-                                {
-                                    GuessCorrect(guessedWord);
-                                    runFlag = false;
-                                    //break;                                    
-                                }                                
-                            }
-                        }
-                        Console.WriteLine(userGuessArray);
-                        Console.ResetColor();
+                        runFlag = GuessCorrectSpecificLetter(userInput,runFlag,guessedWord,userGuessArray );                         
                     }
                     else//if user guess wrong letter
-                    {
-                        
+                    {                        
                         // Append characters to the end of the StringBuilder.
                         if(!failGuessSb.ToString().Contains(userInput))
                         {
@@ -85,11 +61,9 @@ namespace Hangman2ConsoleApp
                         else
                         {
                             FailGuesses(failGuessSb);
-                            numberOfGuesses = numberOfGuesses - 1;
-                            
+                            numberOfGuesses = numberOfGuesses - 1;                            
                         }                      
                     }
-
 
                 }
                 else //if user guess whole word
@@ -100,22 +74,24 @@ namespace Hangman2ConsoleApp
                         break;
                     }
                     else
-                    {
-                        
+                    {                        
                         DrawHangman(count++);
                     }
                     
                 }
-
-
+                if(numberOfGuesses == 10)
+                {
+                    Console.WriteLine("The game is over!!");
+                    DrawHangman(count = 10);
+                }
                 numberOfGuesses++;
             } while (numberOfGuesses < 10 && runFlag == true);;
         }
 
         private static string GuessWord()
         {
-            //string[] words = new string[] { "Keyboard", "People", "Machine", "School", "Lucky", "Geogerous","Football" };
-            string[] words = new string[] { "Ky", "Pe", "Maas" };
+            string[] words = new string[] { "Keyboard", "People", "Machine", "School", "Lucky", "Geogerous","Football" };
+            //string[] words = new string[] { "Ky", "Pe", "Maas" };
 
             Random randObj = new Random();
             var randomIndex = randObj.Next(0, words.Length);
@@ -164,14 +140,38 @@ namespace Hangman2ConsoleApp
             Console.WriteLine($@"{hangman[hangmanLength]}");
             Console.ResetColor();
         }
-        private static void GuessSpecificLetter(string guessedWord, string userInput)
+        private static bool GuessCorrectSpecificLetter(string userInput, bool runFlag, string guessedWord, char[] userGuessArray)
         {
+                        //GuessSpecificLetter(guessedWord, userInput);
+                        char userInputChar = Convert.ToChar(userInput);
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"Congratualtions! {userInput}");
+                        char[] guessedWordArray = guessedWord.ToCharArray();
+                        for (int i = 0; i < guessedWordArray.Length; i++)
+                        {
+                            //if it found the character
+                            if (userInputChar == guessedWordArray[i])
+                            {
+                                //Replace _ by the character
+                                userGuessArray.SetValue(userInputChar, i);
+                                //if all the character is replaced, break the code
+                                if (new string(userGuessArray).Equals(guessedWord)) //be carefull when converting string! 
+                                {
+                                    GuessCorrect(guessedWord);
+                                    runFlag = false;
+                                    //break;                                    
+                                }                                
+                            }
+                        }
+                        //Console.WriteLine(userGuessArray);
+                        for(int k = 0; k<userGuessArray.Length; k++)
+                        {
+                            Console.Write($"{userGuessArray[k]} \t");
+                        }
+                        Console.WriteLine();
 
-        }
-
-        private static void GuessWholeWord()
-        {
-
+                        Console.ResetColor();
+            return runFlag;
         }
     }
 }
