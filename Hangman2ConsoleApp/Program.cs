@@ -33,7 +33,9 @@ namespace Hangman2ConsoleApp
             do
             {
                 //getting user string
-                string userInput = GetUserInput();
+                Console.Write("Enter word or character to guess : ");
+                string userInput = Console.ReadLine();
+
                 //if user does not enter anything
                 if(userInput == "")
                 {
@@ -47,7 +49,15 @@ namespace Hangman2ConsoleApp
                     //if user guess correct letter
                     if(guessedWord.Contains(userInput))
                     {
-                        runFlag = GuessCorrectSpecificLetter(userInput,runFlag,guessedWord,userGuessArray );                         
+                        if (new string(userGuessArray).Contains(userInput)) // never use userGuessArray.ToString() to convert char to string
+                        {
+                            Console.WriteLine($"You have already guess that letter!");
+                            numberOfGuesses = numberOfGuesses - 1;
+                        }
+                        else
+                        {
+                            runFlag = GuessCorrectSpecificLetter(userInput, runFlag, guessedWord, userGuessArray);
+                        }                           
                     }
                     else//if user guess wrong letter
                     {                        
@@ -98,11 +108,11 @@ namespace Hangman2ConsoleApp
             return words[randomIndex].ToLower();
         }
 
-        private static string GetUserInput()
-        {
-            Console.Write("Enter word or character to guess : ");
-            return Console.ReadLine();
-        }
+        //private static string GetUserInput()
+        //{
+        //    Console.Write("Enter word or character to guess : ");
+        //    return Console.ReadLine();
+        //}
 
         private static void GuessCorrect(string word)
         {
